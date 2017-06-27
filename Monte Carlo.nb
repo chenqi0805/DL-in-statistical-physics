@@ -1,0 +1,2220 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 10.2' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     76950,       2211]
+NotebookOptionsPosition[     72166,       2092]
+NotebookOutlinePosition[     72736,       2115]
+CellTagsIndexPosition[     72649,       2110]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["Monte Carlo Method", "Title",
+ CellChangeTimes->{{3.666201870941721*^9, 3.666201875821732*^9}}],
+
+Cell[CellGroupData[{
+
+Cell["Monte Carlo for the Ising model", "Section",
+ CellChangeTimes->{{3.666202064944042*^9, 3.666202073964939*^9}}],
+
+Cell[TextData[{
+ "Consider Ising model on ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"L", "\[Times]", "L"}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " square lattice:"
+}], "TextNoIndent",
+ CellChangeTimes->{{3.6662031388615017`*^9, 3.6662031556828957`*^9}}],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{"H", "=", 
+   RowBox[{
+    RowBox[{"-", "J"}], 
+    RowBox[{
+     UnderscriptBox["\[Sum]", 
+      RowBox[{"<", 
+       RowBox[{"i", " ", "j"}], ">"}]], 
+     RowBox[{
+      SubsuperscriptBox["S", "i", "z"], 
+      SubsuperscriptBox["S", "j", "z"]}]}]}]}], 
+  TraditionalForm]], "DisplayFormulaNumbered",
+ CellChangeTimes->{{3.666203109558346*^9, 3.666203127409972*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"h", "[", 
+    RowBox[{"x_", ",", "y_"}], "]"}], ":=", 
+   RowBox[{"{", 
+    RowBox[{"Polygon", "[", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"0", ",", "0"}], "}"}], "+", 
+        RowBox[{"{", 
+         RowBox[{"x", ",", "y"}], "}"}]}], ",", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"1", ",", "0"}], "}"}], "+", 
+        RowBox[{"{", 
+         RowBox[{"x", ",", "y"}], "}"}]}], ",", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"1", ",", "1"}], "}"}], "+", 
+        RowBox[{"{", 
+         RowBox[{"x", ",", "y"}], "}"}]}], ",", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"0", ",", "1"}], "}"}], "+", 
+        RowBox[{"{", 
+         RowBox[{"x", ",", "y"}], "}"}]}]}], "}"}], "]"}], "}"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"arrow", "[", 
+    RowBox[{"x_", ",", "y_"}], "]"}], ":=", 
+   RowBox[{"Arrow", "[", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"-", "1"}], "/", "3"}], ",", 
+         RowBox[{
+          RowBox[{"-", "1"}], "/", "3"}]}], "}"}], "+", 
+       RowBox[{"{", 
+        RowBox[{"x", ",", "y"}], "}"}]}], ",", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"1", "/", "3"}], ",", 
+         RowBox[{"1", "/", "3"}]}], "}"}], "+", 
+       RowBox[{"{", 
+        RowBox[{"x", ",", "y"}], "}"}]}]}], "}"}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Latt", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"EdgeForm", "[", 
+      RowBox[{"Opacity", "[", ".7", "]"}], "]"}], ",", "White", ",", 
+     RowBox[{"Table", "[", 
+      RowBox[{
+       RowBox[{"h", "[", " ", 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"i", "-", "1"}], ")"}], ",", 
+         RowBox[{"(", 
+          RowBox[{"j", "-", "1"}], ")"}]}], "]"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"i", ",", "5"}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"j", ",", "5"}], "}"}]}], "]"}]}], "}"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"arrowarray", "=", 
+   RowBox[{"{", 
+    RowBox[{"Red", ",", 
+     RowBox[{"Table", "[", 
+      RowBox[{
+       RowBox[{"arrow", "[", " ", 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"i", "-", "1"}], ")"}], ",", 
+         RowBox[{"(", 
+          RowBox[{"j", "-", "1"}], ")"}]}], "]"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"i", ",", "6"}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"j", ",", "6"}], "}"}]}], "]"}]}], "}"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"gr", "=", 
+   RowBox[{"{", 
+    RowBox[{"Latt", ",", "arrowarray"}], "}"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"Graphics", "[", "gr", "]"}]}], "Input",
+ CellChangeTimes->{{3.66620332608215*^9, 3.6662033267011538`*^9}, {
+  3.666203397094145*^9, 3.6662034422779827`*^9}, {3.666203473057706*^9, 
+  3.666203523162128*^9}, {3.666203578318635*^9, 3.666203696022656*^9}, {
+  3.666203726620975*^9, 3.666203763449089*^9}}],
+
+Cell[BoxData[
+ GraphicsBox[{
+   {GrayLevel[1], EdgeForm[Opacity[
+    0.7]], {PolygonBox[{{0, 0}, {1, 0}, {1, 1}, {0, 1}}], 
+     PolygonBox[{{0, 1}, {1, 1}, {1, 2}, {0, 2}}], 
+     PolygonBox[{{0, 2}, {1, 2}, {1, 3}, {0, 3}}], 
+     PolygonBox[{{0, 3}, {1, 3}, {1, 4}, {0, 4}}], 
+     PolygonBox[{{0, 4}, {1, 4}, {1, 5}, {0, 5}}]}, {
+     PolygonBox[{{1, 0}, {2, 0}, {2, 1}, {1, 1}}], 
+     PolygonBox[{{1, 1}, {2, 1}, {2, 2}, {1, 2}}], 
+     PolygonBox[{{1, 2}, {2, 2}, {2, 3}, {1, 3}}], 
+     PolygonBox[{{1, 3}, {2, 3}, {2, 4}, {1, 4}}], 
+     PolygonBox[{{1, 4}, {2, 4}, {2, 5}, {1, 5}}]}, {
+     PolygonBox[{{2, 0}, {3, 0}, {3, 1}, {2, 1}}], 
+     PolygonBox[{{2, 1}, {3, 1}, {3, 2}, {2, 2}}], 
+     PolygonBox[{{2, 2}, {3, 2}, {3, 3}, {2, 3}}], 
+     PolygonBox[{{2, 3}, {3, 3}, {3, 4}, {2, 4}}], 
+     PolygonBox[{{2, 4}, {3, 4}, {3, 5}, {2, 5}}]}, {
+     PolygonBox[{{3, 0}, {4, 0}, {4, 1}, {3, 1}}], 
+     PolygonBox[{{3, 1}, {4, 1}, {4, 2}, {3, 2}}], 
+     PolygonBox[{{3, 2}, {4, 2}, {4, 3}, {3, 3}}], 
+     PolygonBox[{{3, 3}, {4, 3}, {4, 4}, {3, 4}}], 
+     PolygonBox[{{3, 4}, {4, 4}, {4, 5}, {3, 5}}]}, {
+     PolygonBox[{{4, 0}, {5, 0}, {5, 1}, {4, 1}}], 
+     PolygonBox[{{4, 1}, {5, 1}, {5, 2}, {4, 2}}], 
+     PolygonBox[{{4, 2}, {5, 2}, {5, 3}, {4, 3}}], 
+     PolygonBox[{{4, 3}, {5, 3}, {5, 4}, {4, 4}}], 
+     PolygonBox[{{4, 4}, {5, 4}, {5, 5}, {4, 5}}]}}, 
+   {RGBColor[
+    1, 0, 0], {
+     ArrowBox[NCache[{{Rational[-1, 3], Rational[-1, 3]}, {
+        Rational[1, 3], Rational[
+         1, 3]}}, {{-0.3333333333333333, -0.3333333333333333}, {
+       0.3333333333333333, 0.3333333333333333}}]], 
+     ArrowBox[NCache[{{Rational[-1, 3], Rational[2, 3]}, {
+        Rational[1, 3], Rational[4, 3]}}, {{-0.3333333333333333, 
+       0.6666666666666666}, {0.3333333333333333, 1.3333333333333333`}}]], 
+     ArrowBox[NCache[{{Rational[-1, 3], Rational[5, 3]}, {
+        Rational[1, 3], Rational[7, 3]}}, {{-0.3333333333333333, 
+       1.6666666666666667`}, {0.3333333333333333, 2.3333333333333335`}}]], 
+     ArrowBox[NCache[{{Rational[-1, 3], Rational[8, 3]}, {
+        Rational[1, 3], Rational[10, 3]}}, {{-0.3333333333333333, 
+       2.6666666666666665`}, {0.3333333333333333, 3.3333333333333335`}}]], 
+     ArrowBox[NCache[{{Rational[-1, 3], Rational[11, 3]}, {
+        Rational[1, 3], Rational[13, 3]}}, {{-0.3333333333333333, 
+       3.6666666666666665`}, {0.3333333333333333, 4.333333333333333}}]], 
+     ArrowBox[NCache[{{Rational[-1, 3], Rational[14, 3]}, {
+        Rational[1, 3], Rational[16, 3]}}, {{-0.3333333333333333, 
+       4.666666666666667}, {0.3333333333333333, 5.333333333333333}}]]}, {
+     ArrowBox[NCache[{{Rational[2, 3], Rational[-1, 3]}, {
+        Rational[4, 3], Rational[1, 3]}}, {{
+       0.6666666666666666, -0.3333333333333333}, {1.3333333333333333`, 
+       0.3333333333333333}}]], 
+     ArrowBox[NCache[{{Rational[2, 3], Rational[2, 3]}, {
+        Rational[4, 3], Rational[4, 3]}}, {{0.6666666666666666, 
+       0.6666666666666666}, {1.3333333333333333`, 1.3333333333333333`}}]], 
+     ArrowBox[NCache[{{Rational[2, 3], Rational[5, 3]}, {
+        Rational[4, 3], Rational[7, 3]}}, {{0.6666666666666666, 
+       1.6666666666666667`}, {1.3333333333333333`, 2.3333333333333335`}}]], 
+     ArrowBox[NCache[{{Rational[2, 3], Rational[8, 3]}, {
+        Rational[4, 3], Rational[10, 3]}}, {{0.6666666666666666, 
+       2.6666666666666665`}, {1.3333333333333333`, 3.3333333333333335`}}]], 
+     ArrowBox[NCache[{{Rational[2, 3], Rational[11, 3]}, {
+        Rational[4, 3], Rational[13, 3]}}, {{0.6666666666666666, 
+       3.6666666666666665`}, {1.3333333333333333`, 4.333333333333333}}]], 
+     ArrowBox[NCache[{{Rational[2, 3], Rational[14, 3]}, {
+        Rational[4, 3], Rational[16, 3]}}, {{0.6666666666666666, 
+       4.666666666666667}, {1.3333333333333333`, 5.333333333333333}}]]}, {
+     ArrowBox[NCache[{{Rational[5, 3], Rational[-1, 3]}, {
+        Rational[7, 3], Rational[1, 3]}}, {{
+       1.6666666666666667`, -0.3333333333333333}, {2.3333333333333335`, 
+       0.3333333333333333}}]], 
+     ArrowBox[NCache[{{Rational[5, 3], Rational[2, 3]}, {
+        Rational[7, 3], Rational[4, 3]}}, {{1.6666666666666667`, 
+       0.6666666666666666}, {2.3333333333333335`, 1.3333333333333333`}}]], 
+     ArrowBox[NCache[{{Rational[5, 3], Rational[5, 3]}, {
+        Rational[7, 3], Rational[7, 3]}}, {{1.6666666666666667`, 
+       1.6666666666666667`}, {2.3333333333333335`, 2.3333333333333335`}}]], 
+     ArrowBox[NCache[{{Rational[5, 3], Rational[8, 3]}, {
+        Rational[7, 3], Rational[10, 3]}}, {{1.6666666666666667`, 
+       2.6666666666666665`}, {2.3333333333333335`, 3.3333333333333335`}}]], 
+     ArrowBox[NCache[{{Rational[5, 3], Rational[11, 3]}, {
+        Rational[7, 3], Rational[13, 3]}}, {{1.6666666666666667`, 
+       3.6666666666666665`}, {2.3333333333333335`, 4.333333333333333}}]], 
+     ArrowBox[NCache[{{Rational[5, 3], Rational[14, 3]}, {
+        Rational[7, 3], Rational[16, 3]}}, {{1.6666666666666667`, 
+       4.666666666666667}, {2.3333333333333335`, 5.333333333333333}}]]}, {
+     ArrowBox[NCache[{{Rational[8, 3], Rational[-1, 3]}, {
+        Rational[10, 3], Rational[1, 3]}}, {{
+       2.6666666666666665`, -0.3333333333333333}, {3.3333333333333335`, 
+       0.3333333333333333}}]], 
+     ArrowBox[NCache[{{Rational[8, 3], Rational[2, 3]}, {
+        Rational[10, 3], Rational[4, 3]}}, {{2.6666666666666665`, 
+       0.6666666666666666}, {3.3333333333333335`, 1.3333333333333333`}}]], 
+     ArrowBox[NCache[{{Rational[8, 3], Rational[5, 3]}, {
+        Rational[10, 3], Rational[7, 3]}}, {{2.6666666666666665`, 
+       1.6666666666666667`}, {3.3333333333333335`, 2.3333333333333335`}}]], 
+     ArrowBox[NCache[{{Rational[8, 3], Rational[8, 3]}, {
+        Rational[10, 3], Rational[10, 3]}}, {{2.6666666666666665`, 
+       2.6666666666666665`}, {3.3333333333333335`, 3.3333333333333335`}}]], 
+     ArrowBox[NCache[{{Rational[8, 3], Rational[11, 3]}, {
+        Rational[10, 3], Rational[13, 3]}}, {{2.6666666666666665`, 
+       3.6666666666666665`}, {3.3333333333333335`, 4.333333333333333}}]], 
+     ArrowBox[NCache[{{Rational[8, 3], Rational[14, 3]}, {
+        Rational[10, 3], Rational[16, 3]}}, {{2.6666666666666665`, 
+       4.666666666666667}, {3.3333333333333335`, 5.333333333333333}}]]}, {
+     ArrowBox[NCache[{{Rational[11, 3], Rational[-1, 3]}, {
+        Rational[13, 3], Rational[1, 3]}}, {{
+       3.6666666666666665`, -0.3333333333333333}, {4.333333333333333, 
+       0.3333333333333333}}]], 
+     ArrowBox[NCache[{{Rational[11, 3], Rational[2, 3]}, {
+        Rational[13, 3], Rational[4, 3]}}, {{3.6666666666666665`, 
+       0.6666666666666666}, {4.333333333333333, 1.3333333333333333`}}]], 
+     ArrowBox[NCache[{{Rational[11, 3], Rational[5, 3]}, {
+        Rational[13, 3], Rational[7, 3]}}, {{3.6666666666666665`, 
+       1.6666666666666667`}, {4.333333333333333, 2.3333333333333335`}}]], 
+     ArrowBox[NCache[{{Rational[11, 3], Rational[8, 3]}, {
+        Rational[13, 3], Rational[10, 3]}}, {{3.6666666666666665`, 
+       2.6666666666666665`}, {4.333333333333333, 3.3333333333333335`}}]], 
+     ArrowBox[NCache[{{Rational[11, 3], Rational[11, 3]}, {
+        Rational[13, 3], Rational[13, 3]}}, {{3.6666666666666665`, 
+       3.6666666666666665`}, {4.333333333333333, 4.333333333333333}}]], 
+     ArrowBox[NCache[{{Rational[11, 3], Rational[14, 3]}, {
+        Rational[13, 3], Rational[16, 3]}}, {{3.6666666666666665`, 
+       4.666666666666667}, {4.333333333333333, 5.333333333333333}}]]}, {
+     ArrowBox[NCache[{{Rational[14, 3], Rational[-1, 3]}, {
+        Rational[16, 3], Rational[1, 3]}}, {{
+       4.666666666666667, -0.3333333333333333}, {5.333333333333333, 
+       0.3333333333333333}}]], 
+     ArrowBox[NCache[{{Rational[14, 3], Rational[2, 3]}, {
+        Rational[16, 3], Rational[4, 3]}}, {{4.666666666666667, 
+       0.6666666666666666}, {5.333333333333333, 1.3333333333333333`}}]], 
+     ArrowBox[NCache[{{Rational[14, 3], Rational[5, 3]}, {
+        Rational[16, 3], Rational[7, 3]}}, {{4.666666666666667, 
+       1.6666666666666667`}, {5.333333333333333, 2.3333333333333335`}}]], 
+     ArrowBox[NCache[{{Rational[14, 3], Rational[8, 3]}, {
+        Rational[16, 3], Rational[10, 3]}}, {{4.666666666666667, 
+       2.6666666666666665`}, {5.333333333333333, 3.3333333333333335`}}]], 
+     ArrowBox[NCache[{{Rational[14, 3], Rational[11, 3]}, {
+        Rational[16, 3], Rational[13, 3]}}, {{4.666666666666667, 
+       3.6666666666666665`}, {5.333333333333333, 4.333333333333333}}]], 
+     ArrowBox[NCache[{{Rational[14, 3], Rational[14, 3]}, {
+        Rational[16, 3], Rational[16, 3]}}, {{4.666666666666667, 
+       4.666666666666667}, {5.333333333333333, 
+       5.333333333333333}}]]}}}]], "Output",
+ CellChangeTimes->{
+  3.6662035242569323`*^9, {3.6662036645631533`*^9, 3.666203696735196*^9}, {
+   3.6662037285338497`*^9, 3.6662037640997*^9}}]
+}, Open  ]],
+
+Cell["\<\
+Generate a trial configuration: select a spin at random, and the trial \
+configuration is the present configuration with the selected spin turned \
+over. The energy difference is given by\
+\>", "ItemNumbered",
+ CellChangeTimes->{{3.66620212626891*^9, 3.666202134891686*^9}, {
+  3.666202257905702*^9, 3.6662023271326036`*^9}}],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{
+   RowBox[{"\[CapitalDelta]", " ", 
+    RowBox[{"E", "(", 
+     RowBox[{"X", "\[Rule]", 
+      SuperscriptBox["X", "\[Prime]"]}], ")"}]}], "=", 
+   RowBox[{
+    RowBox[{"E", "(", 
+     SuperscriptBox["X", "\[Prime]"], ")"}], "-", 
+    RowBox[{"E", "(", "X", ")"}]}]}], 
+  TraditionalForm]], "DisplayFormulaNumbered",
+ CellChangeTimes->{{3.666202328967993*^9, 3.6662023512594423`*^9}}],
+
+Cell["\<\
+On the square lattice in two dimension, it is clear that the energy \
+difference depends only on the number of neighbors which have the same spin \
+as the selected spin in the old configuration - between 0 and 4. the energy \
+differences are\
+\>", "TextNoIndent",
+ CellChangeTimes->{{3.666204529400002*^9, 3.66620465611596*^9}}],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{"(", GridBox[{
+     {
+      RowBox[{"\[CapitalDelta]", " ", "E", 
+       RowBox[{"(", 
+        RowBox[{"X", "\[Rule]", 
+         SuperscriptBox["X", "\[Prime]"]}], ")"}]}], 
+      RowBox[{
+      "#", " ", "of", " ", "neighbors", " ", "have", " ", "the", " ", "same", 
+       " ", "spin"}]},
+     {
+      RowBox[{
+       RowBox[{"-", "8"}], "J"}], "0"},
+     {
+      RowBox[{
+       RowBox[{"-", "4"}], "J"}], "1"},
+     {"0", "2"},
+     {
+      RowBox[{"4", "J"}], "3"},
+     {
+      RowBox[{"8", "J"}], "4"}
+    }], ")"}], TraditionalForm]], "DisplayFormulaNumbered",
+ CellChangeTimes->{{3.666204663135824*^9, 3.666204739779684*^9}, {
+  3.6662184132712183`*^9, 3.666218419856645*^9}, {3.666218699720916*^9, 
+  3.666218756203533*^9}, {3.666218835094574*^9, 3.66621883617663*^9}, {
+  3.666218883255413*^9, 3.666218903035204*^9}}],
+
+Cell[TextData[{
+ "The trial state is accepted with probability ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"exp", "[", 
+    RowBox[{
+     RowBox[{"-", "\[Beta]"}], " ", "\[CapitalDelta]", " ", 
+     RowBox[{"E", "(", 
+      RowBox[{"X", "\[Rule]", 
+       SuperscriptBox["X", "\[Prime]"]}], ")"}]}], "]"}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " if ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"\[CapitalDelta]", " ", 
+     RowBox[{"E", "(", 
+      RowBox[{"X", "\[Rule]", 
+       SuperscriptBox["X", "\[Prime]"]}], ")"}]}], ">", "0"}], 
+   TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ "; however, the accepted probability is ",
+ Cell[BoxData[
+  FormBox["1", TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ "if ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"\[CapitalDelta]", " ", 
+     RowBox[{"E", "(", 
+      RowBox[{"X", "\[Rule]", 
+       SuperscriptBox["X", "\[Prime]"]}], ")"}]}], "<", "0"}], 
+   TraditionalForm]]],
+ ".Since ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"exp", "[", 
+    RowBox[{
+     RowBox[{"-", "\[Beta]"}], " ", "\[CapitalDelta]", " ", 
+     RowBox[{"E", "(", 
+      RowBox[{"X", "\[Rule]", 
+       SuperscriptBox["X", "\[Prime]"]}], ")"}]}], "]"}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " can assume only five different values, it is advisable to store these in \
+an array in order to avoid calculating the exponential function over and over \
+again."
+}], "ItemNumbered",
+ CellChangeTimes->{{3.6662024177031527`*^9, 3.666202464180749*^9}, {
+  3.66620283351924*^9, 3.666202911795514*^9}, {3.6662050722959538`*^9, 
+  3.6662051285041103`*^9}}],
+
+Cell[TextData[{
+ "Remark: The initial configuration will be chosen either random or as FM \
+(all spins either ",
+ Cell[BoxData[
+  FormBox["+", TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " or ",
+ Cell[BoxData[
+  FormBox["-", TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ "). The specific heat is calculated according to"
+}], "TextNoIndent",
+ CellChangeTimes->{{3.6662052651869793`*^9, 3.666205314434511*^9}, {
+  3.666205361329935*^9, 3.666205372519561*^9}}],
+
+Cell[BoxData[{
+ FormBox[
+  RowBox[{
+   SubscriptBox["C", "V"], "=", 
+   RowBox[{
+    FractionBox["1", 
+     RowBox[{
+      SubscriptBox["k", "B"], 
+      SuperscriptBox["T", "2"]}]], 
+    FractionBox[
+     RowBox[{
+      SuperscriptBox["\[PartialD]", "2"], 
+      RowBox[{"Log", "[", "Z", "]"}]}], 
+     RowBox[{"\[PartialD]", 
+      SuperscriptBox["\[Beta]", "2"]}]]}]}], 
+  TraditionalForm], "\[LineSeparator]", 
+ FormBox[
+  RowBox[{"=", 
+   RowBox[{
+    FractionBox["1", 
+     RowBox[{
+      SubscriptBox["k", "B"], 
+      SuperscriptBox["T", "2"]}]], "[", 
+    RowBox[{
+     FractionBox[
+      RowBox[{
+       UnderscriptBox["\[Sum]", "X"], 
+       RowBox[{
+        SuperscriptBox["\[ExponentialE]", 
+         RowBox[{"-", 
+          RowBox[{"\[Beta]\[ScriptCapitalH]", "(", "X", ")"}]}]], 
+        RowBox[{
+         SuperscriptBox["\[ScriptCapitalH]", "2"], "(", "X", ")"}]}]}], 
+      RowBox[{
+       UnderscriptBox["\[Sum]", "X"], 
+       SuperscriptBox["\[ExponentialE]", 
+        RowBox[{"-", 
+         RowBox[{"\[Beta]\[ScriptCapitalH]", "(", "X", ")"}]}]]}]], "-", 
+     SuperscriptBox[
+      RowBox[{"(", 
+       FractionBox[
+        RowBox[{
+         UnderscriptBox["\[Sum]", "X"], 
+         RowBox[{
+          SuperscriptBox["\[ExponentialE]", 
+           RowBox[{"-", 
+            RowBox[{"\[Beta]\[ScriptCapitalH]", "(", "X", ")"}]}]], 
+          RowBox[{"\[ScriptCapitalH]", "(", "X", ")"}]}]}], 
+        RowBox[{
+         UnderscriptBox["\[Sum]", "X"], 
+         SuperscriptBox["\[ExponentialE]", 
+          RowBox[{"-", 
+           RowBox[{"\[Beta]\[ScriptCapitalH]", "(", "X", ")"}]}]]}]], ")"}], 
+      "2"]}], "]"}]}], TraditionalForm], "\[LineSeparator]", 
+ FormBox[
+  RowBox[{"=", 
+   RowBox[{
+    FractionBox["1", 
+     RowBox[{
+      SubscriptBox["k", "B"], 
+      SuperscriptBox["T", "2"]}]], "[", 
+    RowBox[{
+     SubscriptBox[
+      RowBox[{"\[LeftAngleBracket]", 
+       SuperscriptBox["E", "2"], "\[RightAngleBracket]"}], "NVT"], "-", 
+     SubsuperscriptBox[
+      RowBox[{"\[LeftAngleBracket]", "E", "\[RightAngleBracket]"}], "NVT", 
+      "2"]}], "]"}]}], TraditionalForm]}], "DisplayFormulaNumbered",
+ CellChangeTimes->{{3.666205375979842*^9, 3.666205403166099*^9}, {
+  3.666205604655889*^9, 3.666205626729735*^9}, {3.666213207373438*^9, 
+  3.666213278107719*^9}}],
+
+Cell["Similarly, the magnetic susceptibility can be written as", \
+"TextNoIndent",
+ CellChangeTimes->{{3.666314002023961*^9, 3.666314026353402*^9}}],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{"\[Chi]", "=", 
+   RowBox[{
+    FractionBox[
+     RowBox[{"\[PartialD]", 
+      RowBox[{"\[LeftAngleBracket]", "M", "\[RightAngleBracket]"}]}], 
+     RowBox[{"\[PartialD]", "H"}]], "=", 
+    RowBox[{"\[Beta]", "[", 
+     RowBox[{
+      RowBox[{"\[LeftAngleBracket]", 
+       SuperscriptBox["M", "2"], "\[RightAngleBracket]"}], "-", 
+      SuperscriptBox[
+       RowBox[{"\[LeftAngleBracket]", "M", "\[RightAngleBracket]"}], "2"]}], 
+     "]"}]}]}], TraditionalForm]], "DisplayFormulaNumbered",
+ CellChangeTimes->{{3.6663140286745977`*^9, 3.666314074068666*^9}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Variational Monte Carlo (VMC)", "Section",
+ CellChangeTimes->{{3.666202064944042*^9, 3.666202073964939*^9}, {
+  3.6663140913431396`*^9, 3.66631410148085*^9}, {3.6663141647435837`*^9, 
+  3.66631417907686*^9}}],
+
+Cell["Variational method:", "TextNoIndent",
+ CellChangeTimes->{{3.666397002931932*^9, 3.6663970113351316`*^9}}],
+
+Cell[TextData[{
+ "Construct the trial many-particle wave function ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SubscriptBox["\[Psi]", 
+     StyleBox["\[Alpha]",
+      FontWeight->"Bold"]], "(", "R", ")"}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ ", depending on the ",
+ Cell[BoxData[
+  FormBox["S", TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " variational parameters ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    StyleBox["\[Alpha]",
+     FontWeight->"Bold"], "=", 
+    RowBox[{"(", 
+     RowBox[{
+      SubscriptBox["\[Alpha]", "1"], ",", "\[Ellipsis]", ",", 
+      SubscriptBox["\[Alpha]", "S"]}], ")"}]}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ ". ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[Psi]", 
+    StyleBox["\[Alpha]",
+     FontWeight->"Bold"]], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " depends on the combined position coordinate ",
+ Cell[BoxData[
+  FormBox[
+   StyleBox["R",
+    FontWeight->"Bold"], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " of all the ",
+ Cell[BoxData[
+  FormBox["N", TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " particles ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"R", "=", 
+     SubscriptBox[
+      StyleBox["r",
+       FontWeight->"Bold"], "1"]}], ",", "\[Ellipsis]", ",", 
+    SubscriptBox[
+     StyleBox["r",
+      FontWeight->"Bold"], "N"]}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ "."
+}], "Item",
+ CellChangeTimes->{{3.666397388050754*^9, 3.666397542267447*^9}}],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{
+   RowBox[{"\[LeftAngleBracket]", "E", "\[RightAngleBracket]"}], "=", 
+   FractionBox[
+    RowBox[{
+     TemplateBox[{SubscriptBox["\[Psi]", 
+        StyleBox["\[Alpha]", FontWeight -> "Bold"]]},
+      "Bra"], "H", 
+     TemplateBox[{SubscriptBox["\[Psi]", 
+        StyleBox["\[Alpha]", FontWeight -> "Bold"]]},
+      "Ket"]}], 
+    TemplateBox[{SubscriptBox["\[Psi]", 
+       StyleBox["\[Alpha]", FontWeight -> "Bold"]],SubscriptBox["\[Psi]", 
+       StyleBox["\[Alpha]", FontWeight -> "Bold"]]},
+     "BraKet"]]}], TraditionalForm]], "DisplayFormulaNumbered",
+ CellChangeTimes->{{3.666397568785314*^9, 3.666397614277158*^9}}],
+
+Cell[CellGroupData[{
+
+Cell["Evaluate the expectation value of the energy.", "Item",
+ CellChangeTimes->{{3.666397388050754*^9, 3.666397566424883*^9}, 
+   3.6663977723160458`*^9}],
+
+Cell[TextData[{
+ "Vary the parameters ",
+ StyleBox["\[Alpha] ",
+  FontWeight->"Bold"],
+ "according to some minimisation algorithm and return to step 1."
+}], "Item",
+ CellChangeTimes->{{3.666397388050754*^9, 3.666397566424883*^9}, {
+  3.666397648016317*^9, 3.666397687422883*^9}}]
+}, Open  ]],
+
+Cell[TextData[{
+ "It turns out that in realistic systems the many-body wave function assumes \
+very small values in large parts of configuration space, so a straightforward \
+procedure using homogeneous distributed random points in configuration space \
+is bound to fail. This suggests that it might be efficient to use a \
+Metropolis algorithm in which a collection of random walkers is pushed \
+towards those regions of configuration space where the wave function assumes \
+appreciable values. For any trial wave function ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[Psi]", "T"], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ ", the expectation value of the energy can be written as"
+}], "TextNoIndent",
+ CellChangeTimes->{{3.666397872145083*^9, 3.6663979086943703`*^9}, {
+  3.666397948360952*^9, 3.666397985848134*^9}, {3.6663981125091763`*^9, 
+  3.666398215659835*^9}, {3.666398300880862*^9, 3.6663983145502253`*^9}, {
+  3.66639835841411*^9, 3.6663983773442297`*^9}}],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{
+   RowBox[{"\[LeftAngleBracket]", "E", "\[RightAngleBracket]"}], "=", 
+   RowBox[{
+    FractionBox[
+     RowBox[{"\[Integral]", 
+      RowBox[{
+       RowBox[{"\[DifferentialD]", "R"}], " ", 
+       RowBox[{
+        SubscriptBox["\[Psi]", "T"], "(", "R", ")"}], "H", " ", 
+       RowBox[{
+        SubscriptBox["\[Psi]", "T"], "(", "R", ")"}]}]}], 
+     RowBox[{"\[Integral]", 
+      RowBox[{
+       RowBox[{"\[DifferentialD]", "R"}], " ", 
+       RowBox[{
+        SubsuperscriptBox["\[Psi]", "T", "2"], "(", "R", ")"}]}]}]], "=", 
+    RowBox[{
+     FractionBox[
+      RowBox[{"\[Integral]", 
+       RowBox[{
+        RowBox[{"\[DifferentialD]", "R"}], " ", 
+        RowBox[{
+         SubsuperscriptBox["\[Psi]", "T", "2"], "(", "R", ")"}], 
+        FractionBox[
+         RowBox[{"H", " ", 
+          SubscriptBox["\[Psi]", "T"], 
+          RowBox[{"(", "R", ")"}]}], 
+         RowBox[{
+          SubscriptBox["\[Psi]", "T"], "(", "R", ")"}]]}]}], 
+      RowBox[{"\[Integral]", 
+       RowBox[{
+        RowBox[{"\[DifferentialD]", "R"}], " ", 
+        RowBox[{
+         SubsuperscriptBox["\[Psi]", "T", "2"], "(", "R", ")"}]}]}]], "=", 
+     FractionBox[
+      RowBox[{"\[Integral]", 
+       RowBox[{
+        RowBox[{"\[DifferentialD]", "R"}], " ", 
+        RowBox[{
+         SubsuperscriptBox["\[Psi]", "T", "2"], "(", "R", ")"}], 
+        RowBox[{
+         SubscriptBox["E", "L"], "(", "R", ")"}]}]}], 
+      RowBox[{"\[Integral]", 
+       RowBox[{
+        RowBox[{"\[DifferentialD]", "R"}], " ", 
+        RowBox[{
+         SubsuperscriptBox["\[Psi]", "T", "2"], "(", "R", ")"}]}]}]]}]}]}], 
+  TraditionalForm]], "DisplayFormulaNumbered",
+ CellChangeTimes->{{3.666398318200446*^9, 3.6663983512972813`*^9}, {
+  3.666398385599236*^9, 3.6663984406723013`*^9}, {3.6663987658987226`*^9, 
+  3.666398780477147*^9}, {3.6663990576522818`*^9, 3.666399067109583*^9}}],
+
+Cell["where we defined the local energy as", "TextNoIndent",
+ CellChangeTimes->{{3.666399085261945*^9, 3.666399087680873*^9}, {
+  3.66640038277389*^9, 3.666400396518056*^9}}],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{
+   RowBox[{
+    SubscriptBox["E", "L"], "(", "R", ")"}], "=", 
+   FractionBox[
+    RowBox[{"H", " ", 
+     SubscriptBox["\[Psi]", "T"], 
+     RowBox[{"(", "R", ")"}]}], 
+    RowBox[{
+     SubscriptBox["\[Psi]", "T"], "(", "R", ")"}]]}], 
+  TraditionalForm]], "DisplayFormulaNumbered",
+ CellChangeTimes->{{3.666399089680504*^9, 3.666399097440638*^9}}],
+
+Cell[TextData[{
+ "We need to construct a Metropolis-walk in the same spirit as in ordinary \
+Monte Carlo, but now with a stationary distribution ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"\[Rho]", "(", "R", ")"}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " given by"
+}], "TextNoIndent",
+ CellChangeTimes->{{3.666401150453722*^9, 3.666401204868268*^9}}],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{
+   RowBox[{"\[Rho]", "(", "R", ")"}], "=", 
+   FractionBox[
+    RowBox[{
+     SubsuperscriptBox["\[Psi]", "T", "2"], "(", "R", ")"}], 
+    RowBox[{"\[Integral]", 
+     RowBox[{
+      RowBox[{"\[DifferentialD]", 
+       SuperscriptBox["R", "\[Prime]"]}], 
+      RowBox[{
+       SubsuperscriptBox["\[Psi]", "T", "2"], "(", 
+       SuperscriptBox["R", "\[Prime]"], ")"}]}]}]]}], 
+  TraditionalForm]], "DisplayFormulaNumbered",
+ CellChangeTimes->{{3.6664012077689333`*^9, 3.666401232554111*^9}}],
+
+Cell["The procedure is as follows:", "TextNoIndent",
+ CellChangeTimes->{{3.666401361607504*^9, 3.6664013638296127`*^9}, {
+  3.666401397774775*^9, 3.666401403377386*^9}}],
+
+Cell[TextData[{
+ "Put ",
+ Cell[BoxData[
+  FormBox["N", TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " walkers at random positions;"
+}], "Item",
+ CellChangeTimes->{{3.666397388050754*^9, 3.666397542267447*^9}, {
+  3.666406063507362*^9, 3.6664060749837513`*^9}}],
+
+Cell["REPEAT", "TextNoIndent",
+ CellChangeTimes->{{3.6664060940488787`*^9, 3.666406097181676*^9}}],
+
+Cell[CellGroupData[{
+
+Cell["Select next walker;", "Item",
+ CellChangeTimes->{{3.666397388050754*^9, 3.666397542267447*^9}, {
+  3.666406063507362*^9, 3.666406107686617*^9}}],
+
+Cell["Shift that walker to a new position", "Item",
+ CellChangeTimes->{{3.666397388050754*^9, 3.666397542267447*^9}, {
+  3.666406063507362*^9, 3.666406107686617*^9}, {3.6664062909624367`*^9, 
+  3.666406301324288*^9}}],
+
+Cell[TextData[{
+ "Calculate ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"p", "=", 
+    FractionBox[
+     RowBox[{
+      SubsuperscriptBox["\[Psi]", "T", "2"], "(", 
+      SuperscriptBox["R", "\[Prime]"], ")"}], 
+     RowBox[{
+      SubsuperscriptBox["\[Psi]", "T", "2"], "(", "R", ")"}]]}], 
+   TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ ", where ",
+ Cell[BoxData[
+  FormBox[
+   SuperscriptBox["R", "\[Prime]"], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " is the new and ",
+ Cell[BoxData[
+  FormBox["R", TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " is the old configuration"
+}], "Item",
+ CellChangeTimes->{{3.666397388050754*^9, 3.666397542267447*^9}, {
+  3.666406063507362*^9, 3.666406107686617*^9}, {3.6664062909624367`*^9, 
+  3.6664063908666058`*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "If ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"p", "<", "1"}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " the new position is accepted with probability ",
+ Cell[BoxData[
+  FormBox["p", TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ ";"
+}], "Subitem",
+ CellChangeTimes->{{3.6664064102547913`*^9, 3.666406434398758*^9}}],
+
+Cell[TextData[{
+ "If ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"p", "\[GreaterEqual]", "1"}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " the new position is accepted;"
+}], "Subitem",
+ CellChangeTimes->{{3.6664064102547913`*^9, 3.6664064563926563`*^9}}]
+}, Open  ]]
+}, Open  ]],
+
+Cell["UNTIL finished.", "TextNoIndent",
+ CellChangeTimes->{{3.6664062700996647`*^9, 3.666406274950821*^9}}],
+
+Cell["Harmonic Oscillator", "Subsection",
+ CellChangeTimes->{{3.666406830974275*^9, 3.666406836828701*^9}}]
+}, Open  ]],
+
+Cell["Diffusion Monte Carlo (DMC)", "Section",
+ CellChangeTimes->{{3.666202064944042*^9, 3.666202073964939*^9}, {
+  3.6663140913431396`*^9, 3.66631410148085*^9}, {3.6663141647435837`*^9, 
+  3.66631417907686*^9}, {3.666314251163683*^9, 3.666314252822578*^9}, {
+  3.666314384806635*^9, 3.666314385678871*^9}}],
+
+Cell["Path-Integral Monte Carlo (PMC)", "Section",
+ CellChangeTimes->{{3.666202064944042*^9, 3.666202073964939*^9}, {
+  3.6663140913431396`*^9, 3.66631410148085*^9}, {3.6663141647435837`*^9, 
+  3.66631417907686*^9}, {3.666314259817423*^9, 3.666314263841648*^9}, {
+  3.666314388037299*^9, 3.6663143883191566`*^9}}],
+
+Cell[CellGroupData[{
+
+Cell["Determinant Quantum Monte Carlo methods", "Section",
+ CellChangeTimes->{{3.666202064944042*^9, 3.666202073964939*^9}, {
+  3.666446818315571*^9, 3.666446832559061*^9}}],
+
+Cell["Consider Hubbard model", "TextNoIndent",
+ CellChangeTimes->{{3.666446854619185*^9, 3.666446859540434*^9}}],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{
+   OverscriptBox["H", "^"], "=", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"-", "t"}], 
+     RowBox[{
+      UnderscriptBox["\[Sum]", 
+       RowBox[{"i", ",", "j", ",", "\[Sigma]"}]], 
+      RowBox[{
+       RowBox[{
+        SubsuperscriptBox["c", "\[Sigma]", "\[Dagger]"], "(", "i", ")"}], 
+       RowBox[{
+        SubscriptBox["c", "\[Sigma]"], "(", "j", ")"}]}]}]}], "+", 
+    RowBox[{"U", 
+     RowBox[{
+      UnderscriptBox["\[Sum]", "i"], 
+      RowBox[{
+       RowBox[{
+        SubscriptBox["n", "\[UpArrow]"], "(", "i", ")"}], 
+       RowBox[{
+        SubscriptBox["n", "\[DownArrow]"], "(", "i", ")"}]}]}]}], "-", 
+    RowBox[{"\[Mu]", 
+     RowBox[{
+      UnderscriptBox["\[Sum]", 
+       RowBox[{"i", ",", " ", "\[Sigma]"}]], 
+      RowBox[{
+       SubscriptBox["n", "\[Sigma]"], "(", "i", ")"}]}]}]}]}], 
+  TraditionalForm]], "DisplayFormulaNumbered",
+ CellChangeTimes->{{3.666446863236562*^9, 3.666446948629458*^9}}],
+
+Cell[TextData[{
+ "For any observable, ",
+ Cell[BoxData[
+  FormBox[
+   OverscriptBox["O", "^"], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ ", we are concerned about its expectation value, defined as"
+}], "TextNoIndent",
+ CellChangeTimes->{{3.666446989107082*^9, 3.666447017395993*^9}}],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{
+   RowBox[{"\[LeftAngleBracket]", 
+    OverscriptBox["O", "^"], "\[RightAngleBracket]"}], "=", 
+   FractionBox[
+    RowBox[{"Tr", " ", 
+     OverscriptBox["O", "^"], 
+     SuperscriptBox["\[ExponentialE]", 
+      RowBox[{
+       RowBox[{"-", "\[Beta]"}], " ", 
+       OverscriptBox["H", "^"]}]]}], 
+    RowBox[{"Tr", " ", 
+     SuperscriptBox["\[ExponentialE]", 
+      RowBox[{
+       RowBox[{"-", "\[Beta]"}], " ", 
+       OverscriptBox["H", "^"]}]]}]]}], 
+  TraditionalForm]], "DisplayFormulaNumbered",
+ CellChangeTimes->{{3.6664470207256327`*^9, 3.666447054062628*^9}}],
+
+Cell["\<\
+The trace is summation over all possible states, which is impossible in \
+practice. However, we can choose important states to find the average by \
+Monte Carlo sampling rather than running over all possible states. In this \
+case we have\
+\>", "TextNoIndent",
+ CellChangeTimes->{{3.666447133262394*^9, 3.666447224218978*^9}}],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{
+   RowBox[{"\[LeftAngleBracket]", 
+    OverscriptBox["O", "^"], "\[RightAngleBracket]"}], "=", 
+   FractionBox[
+    RowBox[{
+     UnderscriptBox["\[Sum]", 
+      RowBox[{" ", "c"}]], 
+     RowBox[{
+      RowBox[{"p", "[", "c", "]"}], 
+      RowBox[{"O", "[", "c", "]"}]}]}], 
+    RowBox[{
+     UnderscriptBox["\[Sum]", 
+      RowBox[{" ", "c"}]], 
+     RowBox[{"p", "[", "c", "]"}]}]]}], 
+  TraditionalForm]], "DisplayFormulaNumbered",
+ CellChangeTimes->{{3.666447229490237*^9, 3.666447277926704*^9}}],
+
+Cell[TextData[{
+ "where ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"p", "[", "c", "]"}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " is the probability of the configuration ",
+ Cell[BoxData[
+  FormBox["c", TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " to have the value of ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"O", "[", "c", "]"}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ ". The configurations ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{
+     RowBox[{"{", "c", "}"}], "=", 
+     SubscriptBox["c", "1"]}], ",", 
+    RowBox[{
+     SubscriptBox["c", "2"], "\[Ellipsis]"}]}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " are successively generated from a Markov-chain process via a proper \
+description on the transition probability ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"W", "(", 
+    RowBox[{
+     SubscriptBox["c", "i"], "\[Rule]", 
+     SubscriptBox["c", 
+      RowBox[{"i", "+", "1"}]]}], ")"}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ ", called important sampling. As already been pointed out, the Metropolis \
+algorithm satisfies the detailed balance principle. In the classical systems, \
+we use the Boltzmann distribution ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"p", "[", "c", "]"}], "=", 
+    SuperscriptBox["\[ExponentialE]", 
+     RowBox[{
+      RowBox[{"-", "\[Beta]"}], " ", 
+      RowBox[{"E", "[", "c", "]"}]}]]}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ ". When probability ratio ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{
+     RowBox[{"p", "[", 
+      SuperscriptBox["c", "\[Prime]"], "]"}], "/", 
+     RowBox[{"p", "[", "c", "]"}]}], ">", "1"}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " we accept the new configuration ",
+ Cell[BoxData[
+  FormBox[
+   SuperscriptBox["c", "\[Prime]"], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " whereas when ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{
+     RowBox[{"p", "[", 
+      SuperscriptBox["c", "\[Prime]"], "]"}], "/", 
+     RowBox[{"p", "[", "c", "]"}]}], "<", "1"}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " we still allow certain obability to determine whether accept or reject \
+updating from ",
+ Cell[BoxData[
+  FormBox["c", TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " to ",
+ Cell[BoxData[
+  FormBox[
+   SuperscriptBox["c", "\[Prime]"], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ "."
+}], "TextNoIndent",
+ CellChangeTimes->{{3.6664473632377663`*^9, 3.66644753347291*^9}, {
+  3.666447613342163*^9, 3.666447712639037*^9}, {3.666447771001894*^9, 
+  3.6664478765352383`*^9}}],
+
+Cell[TextData[{
+ "However, for quantum systems, ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"E", "[", "c", "]"}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " is very difficult to evaluate as we have to diagonalize the full \
+Hamiltonian in Hilbert space. From path integral, the partition function is \
+given as"
+}], "TextNoIndent",
+ CellChangeTimes->{{3.666447885086397*^9, 3.666447952943606*^9}, {
+  3.666448980114703*^9, 3.6664489953809958`*^9}}],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{"Z", "=", 
+   RowBox[{
+    RowBox[{"Tr", "[", 
+     SuperscriptBox[
+      RowBox[{"(", 
+       SuperscriptBox["\[ExponentialE]", 
+        RowBox[{
+         RowBox[{"-", "\[CapitalDelta]\[Tau]"}], " ", 
+         OverscriptBox["H", "^"]}]], ")"}], "M"], "]"}], "=", 
+    RowBox[{
+     RowBox[{"Tr", "[", 
+      RowBox[{
+       OverscriptBox[
+        UnderscriptBox["\[Product]", 
+         RowBox[{"l", "=", "1"}]], "M"], 
+       SuperscriptBox["\[ExponentialE]", 
+        RowBox[{
+         RowBox[{"-", "\[CapitalDelta]\[Tau]"}], " ", 
+         SubscriptBox[
+          OverscriptBox["H", "^"], "l"]}]]}], "]"}], "=", 
+     RowBox[{"Tr", "[", 
+      RowBox[{
+       OverscriptBox[
+        UnderscriptBox["\[Product]", 
+         RowBox[{"l", "=", "1"}]], "M"], 
+       SuperscriptBox["\[ExponentialE]", 
+        RowBox[{
+         RowBox[{"-", "\[CapitalDelta]\[Tau]"}], " ", 
+         RowBox[{"(", 
+          RowBox[{
+           SubsuperscriptBox[
+            OverscriptBox["H", "^"], "l", "t"], "+", 
+           SubsuperscriptBox[
+            OverscriptBox["H", "^"], "l", "U"]}], ")"}]}]]}], "]"}]}]}]}], 
+  TraditionalForm]], "DisplayFormulaNumbered",
+ CellChangeTimes->{{3.666448997901775*^9, 3.666449114875828*^9}}],
+
+Cell["\<\
+By applying the first and second order Suzuki-Trotter decomposition, the \
+partition function can be, respectively, written as\
+\>", "TextNoIndent",
+ CellChangeTimes->{{3.666453509764183*^9, 3.666453549414317*^9}}],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{"Z", "=", 
+   RowBox[{
+    RowBox[{"Tr", "[", 
+     RowBox[{
+      OverscriptBox[
+       UnderscriptBox["\[Product]", 
+        RowBox[{"l", "=", "1"}]], "M"], 
+      RowBox[{
+       SuperscriptBox["\[ExponentialE]", 
+        RowBox[{
+         RowBox[{"-", "\[CapitalDelta]\[Tau]"}], " ", 
+         SubsuperscriptBox[
+          OverscriptBox["H", "^"], "l", "t"]}]], 
+       SuperscriptBox["\[ExponentialE]", 
+        RowBox[{
+         RowBox[{"-", "\[CapitalDelta]\[Tau]"}], " ", 
+         SubsuperscriptBox[
+          OverscriptBox["H", "^"], "l", "U"]}]]}]}], "]"}], "+", 
+    RowBox[{"O", "(", 
+     RowBox[{
+      SuperscriptBox[
+       RowBox[{"(", "\[CapitalDelta]\[Tau]", ")"}], "2"], "t", " ", "U"}], 
+     ")"}]}]}], TraditionalForm]], "DisplayFormulaNumbered",
+ CellChangeTimes->{{3.666453552026163*^9, 3.6664536103980207`*^9}}],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{"Z", "=", 
+   RowBox[{
+    RowBox[{"Tr", "[", 
+     RowBox[{
+      OverscriptBox[
+       UnderscriptBox["\[Product]", 
+        RowBox[{"l", "=", "1"}]], "M"], 
+      RowBox[{
+       SuperscriptBox["\[ExponentialE]", 
+        RowBox[{
+         RowBox[{"-", "\[CapitalDelta]\[Tau]"}], " ", 
+         FractionBox[
+          SubsuperscriptBox[
+           OverscriptBox["H", "^"], "l", "t"], "2"]}]], 
+       SuperscriptBox["\[ExponentialE]", 
+        RowBox[{
+         RowBox[{"-", "\[CapitalDelta]\[Tau]"}], " ", 
+         SubsuperscriptBox[
+          OverscriptBox["H", "^"], "l", "U"]}]], 
+       SuperscriptBox["\[ExponentialE]", 
+        RowBox[{
+         RowBox[{"-", "\[CapitalDelta]\[Tau]"}], " ", 
+         FractionBox[
+          SubsuperscriptBox[
+           OverscriptBox["H", "^"], "l", "t"], "2"]}]]}]}], "]"}], "+", 
+    RowBox[{"O", "(", 
+     RowBox[{
+      SuperscriptBox[
+       RowBox[{"(", "\[CapitalDelta]\[Tau]", ")"}], "3"], "t", " ", "U"}], 
+     ")"}]}]}], TraditionalForm]], "DisplayFormulaNumbered",
+ CellChangeTimes->{{3.666453620865452*^9, 3.66645364371917*^9}}],
+
+Cell["\<\
+In the former one, the noninteracting part are evolution kernel\
+\>", "TextNoIndent",
+ CellChangeTimes->{{3.666453772090447*^9, 3.6664537765407*^9}, {
+  3.666453985779613*^9, 3.666453994206193*^9}}],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{
+   SuperscriptBox["\[ExponentialE]", 
+    RowBox[{
+     RowBox[{"-", "\[CapitalDelta]\[Tau]"}], " ", 
+     SubsuperscriptBox[
+      OverscriptBox["H", "^"], "l", "t"]}]], "=", 
+   SuperscriptBox["\[ExponentialE]", 
+    RowBox[{
+     RowBox[{"-", "\[CapitalDelta]\[Tau]"}], " ", 
+     RowBox[{
+      UnderscriptBox["\[Sum]", 
+       RowBox[{" ", 
+        RowBox[{"i", ",", "j", ",", "\[Sigma]"}]}]], 
+      RowBox[{
+       RowBox[{
+        SubsuperscriptBox["c", "\[Sigma]", "\[Dagger]"], "(", "i", ")"}], 
+       SubsuperscriptBox["K", 
+        RowBox[{"i", " ", "j"}], "\[Sigma]"], 
+       RowBox[{
+        SubscriptBox["c", "\[Sigma]"], "(", "j", ")"}]}]}]}]]}], 
+  TraditionalForm]], "DisplayFormulaNumbered",
+ CellChangeTimes->{{3.666453770250252*^9, 3.6664538590201597`*^9}}],
+
+Cell[TextData[{
+ "where for Hubbard model ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SubsuperscriptBox["K", 
+     RowBox[{"i", " ", "j"}], "\[Sigma]"], "=", 
+    RowBox[{"-", "t"}]}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " for ",
+ Cell[BoxData[
+  FormBox["i", TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " and ",
+ Cell[BoxData[
+  FormBox["j", TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " connected by a bond. The interaction term"
+}], "TextNoIndent",
+ CellChangeTimes->{{3.666453885669997*^9, 3.666453965905919*^9}, {
+  3.6664540136711884`*^9, 3.666454016124487*^9}}],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{
+   RowBox[{"U", 
+    RowBox[{
+     SubscriptBox["n", "\[UpArrow]"], "(", "i", ")"}], 
+    RowBox[{
+     SubscriptBox["n", "\[DownArrow]"], "(", "i", ")"}]}], "=", 
+   RowBox[{
+    RowBox[{"-", 
+     FractionBox["U", "2"]}], 
+    RowBox[{"{", 
+     RowBox[{
+      SuperscriptBox[
+       RowBox[{"[", 
+        RowBox[{
+         RowBox[{
+          SubscriptBox["n", "\[UpArrow]"], "(", "i", ")"}], "-", 
+         RowBox[{
+          SubscriptBox["n", "\[DownArrow]"], "(", "i", ")"}]}], "]"}], "2"], 
+      "-", 
+      SuperscriptBox[
+       RowBox[{"[", 
+        RowBox[{
+         RowBox[{
+          SubscriptBox["n", "\[UpArrow]"], "(", "i", ")"}], "+", 
+         RowBox[{
+          SubscriptBox["n", "\[DownArrow]"], "(", "i", ")"}]}], "]"}], "2"]}],
+      "}"}]}]}], TraditionalForm]], "DisplayFormulaNumbered",
+ CellChangeTimes->{{3.6664540208900967`*^9, 3.6664540389596357`*^9}, {
+  3.666454485319079*^9, 3.666454513374221*^9}}],
+
+Cell[TextData[{
+ "can be decomposed by a discrete Hubbard-Stratonovich transformation \
+(Hirsch, Fye). For ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"U", ">", "0"}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ ", we have"
+}], "TextNoIndent",
+ CellChangeTimes->{{3.666454750005454*^9, 3.666454804356675*^9}, {
+  3.666454992838312*^9, 3.666455000306253*^9}}],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{
+   SuperscriptBox["\[ExponentialE]", 
+    RowBox[{
+     RowBox[{"-", "\[CapitalDelta]\[Tau]"}], " ", "U", 
+     RowBox[{
+      SubscriptBox["n", "\[UpArrow]"], "(", "i", ")"}], 
+     RowBox[{
+      SubscriptBox["n", "\[DownArrow]"], "(", "i", ")"}]}]], "=", 
+   RowBox[{
+    FractionBox["1", "2"], 
+    RowBox[{
+     UnderscriptBox["\[Sum]", 
+      RowBox[{
+       SubscriptBox["s", "l"], "=", 
+       RowBox[{"\[PlusMinus]", "1"}]}]], 
+     RowBox[{
+      UnderscriptBox["\[Product]", 
+       RowBox[{
+        RowBox[{"\[Sigma]", "=", "\[UpArrow]"}], ",", "\[DownArrow]"}]], 
+      SuperscriptBox["\[ExponentialE]", 
+       RowBox[{
+        RowBox[{"-", 
+         RowBox[{"(", 
+          RowBox[{
+           RowBox[{"\[Sigma]", " ", 
+            RowBox[{
+             SubscriptBox["s", "l"], "(", "i", ")"}], "\[Lambda]"}], "+", 
+           FractionBox[
+            RowBox[{"U", " ", "\[CapitalDelta]\[Tau]"}], "2"]}], ")"}]}], 
+        RowBox[{
+         SubscriptBox["n", "\[Sigma]"], "(", "i", ")"}]}]]}]}]}]}], 
+  TraditionalForm]], "DisplayFormulaNumbered",
+ CellChangeTimes->{{3.666455010966267*^9, 3.666455023328619*^9}, {
+   3.6664645254741488`*^9, 3.666464557545923*^9}, {3.666464589409965*^9, 
+   3.666464632072611*^9}, {3.6664752844112177`*^9, 3.666475298000011*^9}, 
+   3.66647546937731*^9, {3.666477965834017*^9, 3.6664779792654533`*^9}}],
+
+Cell["where", "TextNoIndent",
+ CellChangeTimes->{{3.666477981024585*^9, 3.66647798165806*^9}}],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{"\[Lambda]", "=", 
+   RowBox[{
+    SuperscriptBox["cosh", 
+     RowBox[{"-", "1"}]], "(", 
+    SuperscriptBox["\[ExponentialE]", 
+     RowBox[{
+      FractionBox["U", "2"], "\[CapitalDelta]\[Tau]"}]], ")"}]}], 
+  TraditionalForm]], "DisplayFormulaNumbered",
+ CellChangeTimes->{{3.666477984414921*^9, 3.6664780064122133`*^9}}],
+
+Cell["The partition function could be rewritten as", "TextNoIndent",
+ CellChangeTimes->{{3.666478532006997*^9, 3.666478539403798*^9}}],
+
+Cell[BoxData[{
+ FormBox[
+  RowBox[{"Z", "=", 
+   RowBox[{"Tr", "[", 
+    RowBox[{
+     OverscriptBox[
+      UnderscriptBox["\[Product]", 
+       RowBox[{"l", "=", "1"}]], "M"], 
+     RowBox[{
+      SuperscriptBox["\[ExponentialE]", 
+       RowBox[{
+        RowBox[{"-", "\[CapitalDelta]\[Tau]"}], " ", 
+        SubsuperscriptBox[
+         OverscriptBox["H", "^"], "l", "t"]}]], 
+      SuperscriptBox["\[ExponentialE]", 
+       RowBox[{
+        RowBox[{"-", "\[CapitalDelta]\[Tau]"}], " ", 
+        SubsuperscriptBox[
+         OverscriptBox["H", "^"], "l", "U"]}]]}]}], "]"}]}], 
+  TraditionalForm], "\[LineSeparator]", 
+ FormBox[
+  RowBox[{"=", 
+   RowBox[{"Tr", "[", 
+    RowBox[{
+     OverscriptBox[
+      UnderscriptBox["\[Product]", 
+       RowBox[{"l", "=", "1"}]], "M"], 
+     RowBox[{
+      SuperscriptBox["\[ExponentialE]", 
+       RowBox[{
+        RowBox[{"-", "\[CapitalDelta]\[Tau]"}], " ", 
+        RowBox[{
+         UnderscriptBox["\[Sum]", 
+          RowBox[{" ", 
+           RowBox[{"i", ",", "j", ",", "\[Sigma]"}]}]], 
+         RowBox[{
+          RowBox[{
+           SubsuperscriptBox["c", "\[Sigma]", "\[Dagger]"], "(", "i", ")"}], 
+          SubsuperscriptBox["K", 
+           RowBox[{"i", " ", "j"}], "\[Sigma]"], 
+          RowBox[{
+           SubscriptBox["c", "\[Sigma]"], "(", "j", ")"}]}]}]}]], 
+      RowBox[{
+       OverscriptBox[
+        UnderscriptBox["\[Product]", 
+         RowBox[{"l", "=", "1"}]], "M"], 
+       RowBox[{
+        OverscriptBox[
+         UnderscriptBox["\[Product]", 
+          RowBox[{"i", "=", "1"}]], "N"], 
+        RowBox[{
+         FractionBox["1", "2"], 
+         RowBox[{
+          UnderscriptBox["\[Sum]", 
+           RowBox[{
+            SubscriptBox["s", "l"], "=", 
+            RowBox[{"\[PlusMinus]", "1"}]}]], 
+          RowBox[{
+           UnderscriptBox["\[Product]", 
+            RowBox[{
+             RowBox[{"\[Sigma]", "=", "\[UpArrow]"}], ",", "\[DownArrow]"}]], 
+           
+           SuperscriptBox["\[ExponentialE]", 
+            RowBox[{
+             RowBox[{"-", 
+              RowBox[{"(", 
+               RowBox[{
+                RowBox[{"\[Sigma]", " ", 
+                 RowBox[{
+                  SubscriptBox["s", "l"], "(", "i", ")"}], "\[Lambda]"}], "+", 
+                FractionBox[
+                 RowBox[{"U", " ", "\[CapitalDelta]\[Tau]"}], "2"], "-", 
+                RowBox[{"\[CapitalDelta]\[Tau]", " ", "\[Mu]"}]}], ")"}]}], 
+             RowBox[{
+              SubscriptBox["n", "\[Sigma]"], "(", "i", ")"}]}]]}]}]}]}]}]}]}],
+     "]"}]}], TraditionalForm], "\[LineSeparator]", 
+ FormBox[
+  RowBox[{"=", 
+   RowBox[{
+    SuperscriptBox[
+     RowBox[{"(", 
+      FractionBox["1", "2"], ")"}], 
+     RowBox[{"N", " ", "M"}]], 
+    RowBox[{"Tr", "[", 
+     RowBox[{
+      OverscriptBox[
+       UnderscriptBox["\[Product]", 
+        RowBox[{"l", "=", "1"}]], "M"], 
+      RowBox[{
+       SuperscriptBox["\[ExponentialE]", 
+        RowBox[{
+         RowBox[{"-", "\[CapitalDelta]\[Tau]"}], " ", 
+         RowBox[{
+          UnderscriptBox["\[Sum]", 
+           RowBox[{" ", 
+            RowBox[{"i", ",", "j", ",", "\[Sigma]"}]}]], 
+          RowBox[{
+           RowBox[{
+            SubsuperscriptBox["c", "\[Sigma]", "\[Dagger]"], "(", "i", ")"}], 
+           
+           SubsuperscriptBox["K", 
+            RowBox[{"i", " ", "j"}], "\[Sigma]"], 
+           RowBox[{
+            SubscriptBox["c", "\[Sigma]"], "(", "j", ")"}]}]}]}]], 
+       RowBox[{
+        OverscriptBox[
+         UnderscriptBox["\[Product]", 
+          RowBox[{"i", "=", "1"}]], "N"], 
+        RowBox[{
+         OverscriptBox[
+          UnderscriptBox["\[Product]", 
+           RowBox[{"l", "=", "1"}]], "M"], 
+         RowBox[{
+          UnderscriptBox["\[Sum]", 
+           RowBox[{
+            SubscriptBox["s", "l"], "=", 
+            RowBox[{"\[PlusMinus]", "1"}]}]], 
+          RowBox[{
+           UnderscriptBox["\[Product]", 
+            RowBox[{
+             RowBox[{"\[Sigma]", "=", "\[UpArrow]"}], ",", "\[DownArrow]"}]], 
+           
+           SuperscriptBox["\[ExponentialE]", 
+            RowBox[{
+             RowBox[{"-", 
+              RowBox[{"(", 
+               RowBox[{
+                RowBox[{"\[Sigma]", " ", 
+                 RowBox[{
+                  SubscriptBox["s", "l"], "(", "i", ")"}], "\[Lambda]"}], "+", 
+                FractionBox[
+                 RowBox[{"U", " ", "\[CapitalDelta]\[Tau]"}], "2"], "-", 
+                RowBox[{"\[CapitalDelta]\[Tau]", " ", "\[Mu]"}]}], ")"}]}], 
+             RowBox[{
+              SubscriptBox["n", "\[Sigma]"], "(", "i", ")"}]}]]}]}]}]}]}]}], 
+     "]"}]}]}], TraditionalForm], "\[LineSeparator]", 
+ FormBox[
+  RowBox[{"=", 
+   RowBox[{
+    SuperscriptBox[
+     RowBox[{"(", 
+      FractionBox["1", "2"], ")"}], 
+     RowBox[{"N", " ", "M"}]], 
+    RowBox[{"Tr", "[", 
+     RowBox[{
+      OverscriptBox[
+       UnderscriptBox["\[Product]", 
+        RowBox[{"l", "=", "1"}]], "M"], 
+      RowBox[{
+       SuperscriptBox["\[ExponentialE]", 
+        RowBox[{
+         RowBox[{"-", "\[CapitalDelta]\[Tau]"}], " ", 
+         RowBox[{
+          UnderscriptBox["\[Sum]", 
+           RowBox[{" ", 
+            RowBox[{"i", ",", "j", ",", "\[Sigma]"}]}]], 
+          RowBox[{
+           RowBox[{
+            SubsuperscriptBox["c", "\[Sigma]", "\[Dagger]"], "(", "i", ")"}], 
+           
+           SubsuperscriptBox["K", 
+            RowBox[{"i", " ", "j"}], "\[Sigma]"], 
+           RowBox[{
+            SubscriptBox["c", "\[Sigma]"], "(", "j", ")"}]}]}]}]], 
+       RowBox[{
+        UnderscriptBox["\[Sum]", 
+         RowBox[{"{", "s", "}"}]], 
+        RowBox[{
+         OverscriptBox[
+          UnderscriptBox["\[Product]", 
+           RowBox[{"l", "=", "1"}]], "M"], 
+         RowBox[{
+          OverscriptBox[
+           UnderscriptBox["\[Product]", 
+            RowBox[{"i", "=", "1"}]], "N"], 
+          RowBox[{
+           UnderscriptBox["\[Product]", 
+            RowBox[{
+             RowBox[{"\[Sigma]", "=", "\[UpArrow]"}], ",", "\[DownArrow]"}]], 
+           
+           SuperscriptBox["\[ExponentialE]", 
+            RowBox[{
+             RowBox[{"-", 
+              RowBox[{"(", 
+               RowBox[{
+                RowBox[{"\[Sigma]", " ", 
+                 RowBox[{
+                  SubscriptBox["s", "l"], "(", "i", ")"}], "\[Lambda]"}], "+", 
+                FractionBox[
+                 RowBox[{"U", " ", "\[CapitalDelta]\[Tau]"}], "2"], "-", 
+                RowBox[{"\[CapitalDelta]\[Tau]", " ", "\[Mu]"}]}], ")"}]}], 
+             RowBox[{
+              SubscriptBox["n", "\[Sigma]"], "(", "i", ")"}]}]]}]}]}]}]}]}], 
+     "]"}]}]}], TraditionalForm], "\[LineSeparator]", 
+ FormBox[
+  RowBox[{"=", 
+   RowBox[{
+    SuperscriptBox[
+     RowBox[{"(", 
+      FractionBox["1", "2"], ")"}], 
+     RowBox[{"N", " ", "M"}]], 
+    RowBox[{"Tr", "[", 
+     RowBox[{
+      UnderscriptBox["\[Sum]", 
+       RowBox[{"{", "s", "}"}]], 
+      RowBox[{
+       UnderscriptBox["\[Product]", 
+        RowBox[{
+         RowBox[{"\[Sigma]", "=", "\[UpArrow]"}], ",", "\[DownArrow]"}]], 
+       RowBox[{
+        OverscriptBox[
+         UnderscriptBox["\[Product]", 
+          RowBox[{"l", "=", "1"}]], "M"], 
+        RowBox[{
+         SuperscriptBox["\[ExponentialE]", 
+          RowBox[{
+           RowBox[{"-", "\[CapitalDelta]\[Tau]"}], " ", 
+           RowBox[{
+            UnderscriptBox["\[Sum]", 
+             RowBox[{" ", 
+              RowBox[{"i", ",", "j"}]}]], 
+            RowBox[{
+             RowBox[{
+              SubsuperscriptBox["c", "\[Sigma]", "\[Dagger]"], "(", "i", 
+              ")"}], 
+             SubsuperscriptBox["K", 
+              RowBox[{"i", " ", "j"}], "\[Sigma]"], 
+             RowBox[{
+              SubscriptBox["c", "\[Sigma]"], "(", "j", ")"}]}]}]}]], 
+         SuperscriptBox["\[ExponentialE]", 
+          RowBox[{"-", 
+           RowBox[{
+            UnderscriptBox["\[Sum]", 
+             RowBox[{" ", "i"}]], 
+            RowBox[{
+             RowBox[{"(", 
+              RowBox[{
+               RowBox[{"\[Sigma]", " ", 
+                RowBox[{
+                 SubscriptBox["s", "l"], "(", "i", ")"}], "\[Lambda]"}], "+", 
+               
+               FractionBox[
+                RowBox[{"U", " ", "\[CapitalDelta]\[Tau]"}], "2"], "-", 
+               RowBox[{"\[CapitalDelta]\[Tau]", " ", "\[Mu]"}]}], ")"}], 
+             RowBox[{
+              SubscriptBox["n", "\[Sigma]"], "(", "i", ")"}]}]}]}]]}]}]}]}], 
+     "]"}]}]}], TraditionalForm], "\[LineSeparator]", 
+ FormBox[
+  RowBox[{"=", 
+   RowBox[{
+    SuperscriptBox[
+     RowBox[{"(", 
+      FractionBox["1", "2"], ")"}], 
+     RowBox[{"N", " ", "M"}]], 
+    RowBox[{
+     UnderscriptBox["\[Sum]", 
+      RowBox[{"{", "s", "}"}]], 
+     RowBox[{"Tr", "[", 
+      RowBox[{
+       UnderscriptBox["\[Product]", 
+        RowBox[{
+         RowBox[{"\[Sigma]", "=", "\[UpArrow]"}], ",", "\[DownArrow]"}]], 
+       RowBox[{
+        OverscriptBox[
+         UnderscriptBox["\[Product]", 
+          RowBox[{"l", "=", "1"}]], "M"], 
+        RowBox[{
+         SuperscriptBox["\[ExponentialE]", 
+          RowBox[{
+           RowBox[{"-", "\[CapitalDelta]\[Tau]"}], " ", 
+           RowBox[{
+            UnderscriptBox["\[Sum]", 
+             RowBox[{" ", 
+              RowBox[{"i", ",", "j"}]}]], 
+            RowBox[{
+             RowBox[{
+              SubsuperscriptBox["c", "\[Sigma]", "\[Dagger]"], "(", "i", 
+              ")"}], 
+             SubsuperscriptBox["K", 
+              RowBox[{"i", " ", "j"}], "\[Sigma]"], 
+             RowBox[{
+              SubscriptBox["c", "\[Sigma]"], "(", "j", ")"}]}]}]}]], 
+         SuperscriptBox["\[ExponentialE]", 
+          RowBox[{"-", 
+           RowBox[{
+            UnderscriptBox["\[Sum]", 
+             RowBox[{" ", "i"}]], 
+            RowBox[{
+             RowBox[{"(", 
+              RowBox[{
+               RowBox[{"\[Sigma]", " ", 
+                RowBox[{
+                 SubscriptBox["s", "l"], "(", "i", ")"}], "\[Lambda]"}], "+", 
+               
+               FractionBox[
+                RowBox[{"U", " ", "\[CapitalDelta]\[Tau]"}], "2"], "-", 
+               RowBox[{"\[CapitalDelta]\[Tau]", " ", "\[Mu]"}]}], ")"}], 
+             RowBox[{
+              SubscriptBox["n", "\[Sigma]"], "(", "i", ")"}]}]}]}]]}]}]}], 
+      "]"}]}]}]}], TraditionalForm], "\[LineSeparator]", 
+ FormBox[
+  RowBox[{"=", 
+   RowBox[{
+    SuperscriptBox[
+     RowBox[{"(", 
+      FractionBox["1", "2"], ")"}], 
+     RowBox[{"N", " ", "M"}]], 
+    RowBox[{
+     UnderscriptBox["\[Sum]", 
+      RowBox[{"{", "s", "}"}]], 
+     RowBox[{
+      RowBox[{"det", "[", 
+       RowBox[{"1", "+", 
+        RowBox[{
+         SubsuperscriptBox["B", "M", "\[UpArrow]"], "\[Ellipsis]", " ", 
+         SubsuperscriptBox["B", "1", "\[UpArrow]"]}]}], "]"}], 
+      RowBox[{"det", "[", 
+       RowBox[{"1", "+", 
+        RowBox[{
+         SubsuperscriptBox["B", "M", "\[DownArrow]"], "\[Ellipsis]", " ", 
+         SubsuperscriptBox["B", "1", "\[DownArrow]"]}]}], "]"}]}]}]}]}], 
+  TraditionalForm], "\[LineSeparator]", 
+ FormBox[
+  RowBox[{"=", 
+   RowBox[{
+    SuperscriptBox[
+     RowBox[{"(", 
+      FractionBox["1", "2"], ")"}], 
+     RowBox[{"N", " ", "M"}]], 
+    RowBox[{
+     UnderscriptBox["\[Sum]", 
+      RowBox[{"{", "s", "}"}]], 
+     RowBox[{
+      UnderscriptBox["\[Product]", 
+       RowBox[{
+        RowBox[{"\[Sigma]", "=", "\[UpArrow]"}], ",", "\[DownArrow]"}]], 
+      RowBox[{"det", " ", 
+       RowBox[{
+        SuperscriptBox["O", "\[Sigma]"], "(", 
+        RowBox[{"{", "s", "}"}], ")"}]}]}]}]}]}], 
+  TraditionalForm]}], "DisplayFormulaNumbered",
+ CellChangeTimes->{{3.666478546130075*^9, 3.6664785572534647`*^9}, 
+   3.666478602874024*^9, {3.6664786598138247`*^9, 3.666478674037189*^9}, {
+   3.666478756086494*^9, 3.6664787858125057`*^9}, {3.6664788653555326`*^9, 
+   3.666478904779438*^9}, {3.666478955212599*^9, 3.6664790037738047`*^9}, {
+   3.666479067485861*^9, 3.666479073532099*^9}, {3.666479136011504*^9, 
+   3.666479139856262*^9}, {3.6664792242296658`*^9, 3.666479246517901*^9}, {
+   3.666479316075425*^9, 3.666479317667091*^9}, {3.666479382580142*^9, 
+   3.6664794104239483`*^9}, {3.666481799791773*^9, 3.6664818051829643`*^9}, {
+   3.666481844109419*^9, 3.6664819175288353`*^9}, {3.666481951048976*^9, 
+   3.6664819624999866`*^9}, {3.666482043479369*^9, 3.666482087056814*^9}}],
+
+Cell["where", "TextNoIndent",
+ CellChangeTimes->{{3.6664820399126167`*^9, 3.666482040433276*^9}}],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{
+   RowBox[{
+    SubsuperscriptBox["B", "l", "\[Sigma]"], "=", 
+    RowBox[{
+     SuperscriptBox["\[ExponentialE]", 
+      RowBox[{
+       RowBox[{"-", "\[CapitalDelta]\[Tau]"}], " ", 
+       SuperscriptBox["K", "\[Sigma]"]}]], 
+     SuperscriptBox["\[ExponentialE]", 
+      SubsuperscriptBox["V", "l", "\[Sigma]"]]}]}], ",", 
+   RowBox[{
+    RowBox[{
+     SubsuperscriptBox["V", "l", "\[Sigma]"], "(", "i", ")"}], "=", 
+    RowBox[{"-", 
+     RowBox[{"(", 
+      RowBox[{
+       RowBox[{"\[Sigma]", " ", 
+        RowBox[{
+         SubscriptBox["s", "l"], "(", "i", ")"}], "\[Lambda]"}], "+", 
+       FractionBox[
+        RowBox[{"U", " ", "\[CapitalDelta]\[Tau]"}], "2"], "-", 
+       RowBox[{"\[CapitalDelta]\[Tau]", " ", "\[Mu]"}]}], ")"}]}]}]}], 
+  TraditionalForm]], "DisplayFormulaNumbered",
+ CellChangeTimes->{{3.666482121588595*^9, 3.6664821428141108`*^9}, {
+  3.666484526914261*^9, 3.666484539248081*^9}, {3.666484572603455*^9, 
+  3.666484578332901*^9}, {3.666484618572023*^9, 3.666484618982551*^9}}],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{
+   RowBox[{
+    SuperscriptBox["O", "\[Sigma]"], "(", 
+    RowBox[{"{", "s", "}"}], ")"}], "=", 
+   RowBox[{"1", "+", 
+    RowBox[{
+     SubsuperscriptBox["B", "M", "\[Sigma]"], "\[Ellipsis]", " ", 
+     SubsuperscriptBox["B", "1", "\[Sigma]"]}]}]}], 
+  TraditionalForm]], "DisplayFormulaNumbered",
+ CellChangeTimes->{{3.6664826210154123`*^9, 3.666482643121552*^9}}],
+
+Cell["obviously, we have", "TextNoIndent",
+ CellChangeTimes->{{3.666482357171492*^9, 3.666482362633449*^9}}],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{
+   RowBox[{"p", "[", "c", "]"}], "=", 
+   RowBox[{
+    UnderscriptBox["\[Product]", 
+     RowBox[{
+      RowBox[{"\[Sigma]", "=", "\[UpArrow]"}], ",", "\[DownArrow]"}]], 
+    RowBox[{"det", " ", 
+     RowBox[{
+      SuperscriptBox["O", "\[Sigma]"], "(", 
+      RowBox[{"{", "s", "}"}], ")"}]}]}]}], 
+  TraditionalForm]], "DisplayFormulaNumbered",
+ CellChangeTimes->{{3.666482364872942*^9, 3.6664823730975246`*^9}}],
+
+Cell[TextData[{
+ "as the probability for Ising-spin configuration ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"{", "s", "}"}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " in the Metropolis algorithm. If at ",
+ Cell[BoxData[
+  FormBox["l", TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ "-th time step a spin at site ",
+ Cell[BoxData[
+  FormBox["i", TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " is flipped, ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{
+     RowBox[{
+      SubscriptBox["s", "l"], "(", "i", ")"}], "\[Rule]", 
+     SuperscriptBox[
+      RowBox[{
+       SubscriptBox["s", "l"], "(", "i", ")"}], "\[Prime]"]}], "=", 
+    RowBox[{"-", 
+     RowBox[{
+      SubscriptBox["s", "l"], "(", "i", ")"}]}]}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ ", then the corresponding single-particle propagator becomes ",
+ Cell[BoxData[
+  FormBox[
+   SuperscriptBox[
+    RowBox[{"(", 
+     SubsuperscriptBox["B", "l", "\[Sigma]"], ")"}], "\[Prime]"], 
+   TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " and the probability ratio is"
+}], "TextNoIndent",
+ CellChangeTimes->{{3.666482764817195*^9, 3.666482912423357*^9}}],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{
+   RowBox[{"R", "[", 
+    RowBox[{
+     SuperscriptBox["c", "\[Prime]"], ";", "c"}], "]"}], "=", 
+   RowBox[{
+    FractionBox[
+     RowBox[{"p", "[", 
+      SuperscriptBox["c", "\[Prime]"], "]"}], 
+     RowBox[{"p", "[", "c", "]"}]], "=", 
+    RowBox[{
+     UnderscriptBox["\[Product]", 
+      RowBox[{
+       RowBox[{"\[Sigma]", "=", "\[UpArrow]"}], ",", "\[DownArrow]"}]], 
+     FractionBox[
+      RowBox[{"det", "[", 
+       RowBox[{"1", "+", 
+        RowBox[{
+         SubsuperscriptBox["B", "M", "\[Sigma]"], 
+         SuperscriptBox[
+          RowBox[{"\[Ellipsis]", "(", 
+           SubsuperscriptBox["B", "l", "\[Sigma]"], ")"}], "\[Prime]"], 
+         "\[Ellipsis]", " ", 
+         SubsuperscriptBox["B", "1", "\[Sigma]"]}]}], "]"}], 
+      RowBox[{"det", "[", 
+       RowBox[{"1", "+", 
+        RowBox[{
+         SubsuperscriptBox["B", "M", "\[Sigma]"], "\[Ellipsis]", " ", 
+         SubsuperscriptBox["B", "l", "\[Sigma]"], "\[Ellipsis]", " ", 
+         SubsuperscriptBox["B", "1", "\[Sigma]"]}]}], "]"}]]}]}]}], 
+  TraditionalForm]], "DisplayFormulaNumbered",
+ CellChangeTimes->{{3.666482917634994*^9, 3.666483002785368*^9}}],
+
+Cell[TextData[{
+ "The evaluation of probability ratio is tedious. But it turns out ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"R", "[", 
+    RowBox[{
+     SuperscriptBox["c", "\[Prime]"], ";", "c"}], "]"}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " can be simplified as"
+}], "TextNoIndent",
+ CellChangeTimes->{{3.666483118651678*^9, 3.6664831709025717`*^9}}],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{
+   FractionBox[
+    RowBox[{"det", "[", 
+     RowBox[{"1", "+", 
+      RowBox[{
+       SubsuperscriptBox["B", "M", "\[Sigma]"], 
+       SuperscriptBox[
+        RowBox[{"\[Ellipsis]", "(", 
+         SubsuperscriptBox["B", "l", "\[Sigma]"], ")"}], "\[Prime]"], 
+       "\[Ellipsis]", " ", 
+       SubsuperscriptBox["B", "1", "\[Sigma]"]}]}], "]"}], 
+    RowBox[{"det", "[", 
+     RowBox[{"1", "+", 
+      RowBox[{
+       SubsuperscriptBox["B", "M", "\[Sigma]"], "\[Ellipsis]", " ", 
+       SubsuperscriptBox["B", "l", "\[Sigma]"], "\[Ellipsis]", " ", 
+       SubsuperscriptBox["B", "1", "\[Sigma]"]}]}], "]"}]], "=", 
+   RowBox[{"1", "+", 
+    RowBox[{
+     RowBox[{"(", 
+      RowBox[{"1", "-", 
+       SubscriptBox[
+        RowBox[{"[", 
+         SubsuperscriptBox["G", "l", "\[Sigma]"], "]"}], 
+        RowBox[{"i", " ", "i"}]]}], ")"}], 
+     RowBox[{"(", 
+      RowBox[{
+       SuperscriptBox["\[ExponentialE]", 
+        RowBox[{"2", "\[Lambda]", " ", 
+         RowBox[{
+          SubscriptBox["\[Sigma]s", "l"], "(", "i", ")"}]}]], "-", "1"}], 
+      ")"}]}]}]}], TraditionalForm]], "DisplayFormulaNumbered",
+ CellChangeTimes->{{3.666483178247717*^9, 3.666483224554679*^9}}],
+
+Cell["where", "TextNoIndent",
+ CellChangeTimes->{{3.666483228533126*^9, 3.666483229034769*^9}}],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{
+   SubscriptBox[
+    RowBox[{"[", 
+     SubsuperscriptBox["G", "l", "\[Sigma]"], "]"}], 
+    RowBox[{"i", " ", "j"}]], "=", 
+   RowBox[{"\[LeftAngleBracket]", 
+    RowBox[{
+     RowBox[{
+      SubscriptBox["c", "\[Sigma]"], "(", "i", ")"}], 
+     RowBox[{
+      SubsuperscriptBox["c", "\[Sigma]", "\[Dagger]"], "(", "j", ")"}]}], 
+    "\[RightAngleBracket]"}]}], TraditionalForm]], "DisplayFormulaNumbered",
+ CellChangeTimes->{{3.6664832366387053`*^9, 3.666483258845825*^9}}],
+
+Cell["which can be calculated as follows:", "TextNoIndent",
+ CellChangeTimes->{{3.666483306226933*^9, 3.6664833151537533`*^9}}],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{
+   SubscriptBox[
+    RowBox[{"[", 
+     SubsuperscriptBox["G", "l", "\[Sigma]"], "]"}], 
+    RowBox[{"i", " ", "j"}]], "=", 
+   RowBox[{
+    SubscriptBox[
+     RowBox[{"\[LeftAngleBracket]", 
+      RowBox[{
+       RowBox[{
+        SubscriptBox["c", "\[Sigma]"], "(", "i", ")"}], 
+       RowBox[{
+        SubsuperscriptBox["c", "\[Sigma]", "\[Dagger]"], "(", "j", ")"}]}], 
+      "\[RightAngleBracket]"}], 
+     RowBox[{"{", "s", "}"}]], "=", 
+    FractionBox[
+     RowBox[{"Tr", " ", 
+      RowBox[{
+       SubscriptBox["c", "\[Sigma]"], "(", "i", ")"}], 
+      RowBox[{
+       SubsuperscriptBox["c", "\[Sigma]", "\[Dagger]"], "(", "j", ")"}], 
+      SuperscriptBox["\[ExponentialE]", 
+       RowBox[{
+        RowBox[{"-", "\[Beta]"}], 
+        OverscriptBox["H", "^"]}]]}], 
+     RowBox[{"Tr", " ", 
+      SuperscriptBox["\[ExponentialE]", 
+       RowBox[{
+        RowBox[{"-", "\[Beta]"}], " ", 
+        OverscriptBox["H", "^"]}]]}]]}]}], 
+  TraditionalForm]], "DisplayFormulaNumbered",
+ CellChangeTimes->{{3.666483322037225*^9, 3.6664833281481752`*^9}, {
+  3.666483574424589*^9, 3.66648361104065*^9}, {3.666484013769438*^9, 
+  3.6664840277984543`*^9}}],
+
+Cell[TextData[{
+ "Notice that the subscript ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"{", "s", "}"}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " denotes that the Green\[CloseCurlyQuote]s function is given with the \
+Hubbard Stratonovich field configuration. Unlike classical systems, once a \
+spin is flipped, we have to update the Green\[CloseCurlyQuote]s function \
+under new HS Ising spin configuration ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"{", 
+    SuperscriptBox["s", "\[Prime]"], "}"}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ ". It can be shown that"
+}], "TextNoIndent",
+ CellChangeTimes->{{3.666483647030424*^9, 3.6664837269542828`*^9}, {
+  3.666483761557189*^9, 3.666483784041293*^9}, {3.666485607069899*^9, 
+  3.666485610261557*^9}}],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{
+   SubscriptBox[
+    RowBox[{"[", 
+     SubsuperscriptBox["G", "l", "\[Sigma]"], "]"}], 
+    RowBox[{"i", " ", "j"}]], "=", 
+   SubscriptBox[
+    RowBox[{"[", 
+     SuperscriptBox[
+      RowBox[{"(", 
+       RowBox[{"1", "+", 
+        RowBox[{
+         SubsuperscriptBox["B", 
+          RowBox[{"l", "-", "1"}], "\[Sigma]"], "\[Ellipsis]", " ", 
+         SubsuperscriptBox["B", "1", "\[Sigma]"], 
+         SubsuperscriptBox["B", "M", "\[Sigma]"], "\[Ellipsis]", " ", 
+         SubsuperscriptBox["B", "l", "\[Sigma]"]}]}], ")"}], 
+      RowBox[{"-", "1"}]], "]"}], 
+    RowBox[{"i", " ", "j"}]]}], TraditionalForm]], "DisplayFormulaNumbered",
+ CellChangeTimes->{{3.666485614822103*^9, 3.666485670880597*^9}},
+ CellTags->"eq: 2787601010547098196"],
+
+Cell["The updated Green\[CloseCurlyQuote]s function can be derived as", \
+"TextNoIndent",
+ CellChangeTimes->{{3.6664856974990797`*^9, 3.666485711371847*^9}}],
+
+Cell[BoxData[{
+ FormBox[
+  RowBox[{
+   RowBox[{
+    RowBox[{
+     SubscriptBox[
+      RowBox[{"[", 
+       SubsuperscriptBox["G", "l", "\[Sigma]"], "]"}], 
+      RowBox[{"j", " ", "k"}]], "\[Rule]", 
+     SubsuperscriptBox[
+      RowBox[{"[", 
+       SubsuperscriptBox["G", "l", "\[Sigma]"], "]"}], 
+      RowBox[{"j", " ", "k"}], "\[Prime]"]}], "=", 
+    SubscriptBox[
+     RowBox[{"[", 
+      SuperscriptBox[
+       RowBox[{"(", 
+        RowBox[{"1", "+", 
+         RowBox[{
+          SubsuperscriptBox["B", 
+           RowBox[{"l", "-", "1"}], "\[Sigma]"], "\[Ellipsis]", " ", 
+          SubsuperscriptBox["B", "1", "\[Sigma]"], 
+          SubsuperscriptBox["B", "M", "\[Sigma]"], "\[Ellipsis]", " ", 
+          SuperscriptBox[
+           RowBox[{"(", 
+            SubsuperscriptBox["B", "l", "\[Sigma]"], ")"}], "\[Prime]"]}]}], 
+        ")"}], 
+       RowBox[{"-", "1"}]], "]"}], 
+     RowBox[{"j", " ", "k"}]]}], "\[LineSeparator]"}], 
+  TraditionalForm], "\[LineSeparator]", 
+ FormBox[
+  StyleBox[
+   RowBox[{"=", 
+    RowBox[{
+     SubscriptBox[
+      RowBox[{"[", 
+       SubsuperscriptBox["G", "l", "\[Sigma]"], "]"}], 
+      RowBox[{"j", " ", "k"}]], "-", 
+     FractionBox[
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+         SubscriptBox["\[Delta]", 
+          RowBox[{"j", " ", "i"}]], "-", 
+         SubscriptBox[
+          RowBox[{"[", 
+           SubsuperscriptBox["G", "l", "\[Sigma]"], "]"}], 
+          RowBox[{"j", " ", "i"}]]}], "}"}], 
+       SubscriptBox[
+        RowBox[{
+         RowBox[{
+          SubsuperscriptBox["\[Gamma]", "l", "\[Sigma]"], "(", "i", ")"}], 
+         "[", 
+         SubsuperscriptBox["G", "l", "\[Sigma]"], "]"}], 
+        RowBox[{"i", " ", "k"}]]}], 
+      RowBox[{"1", "+", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"1", "-", 
+          SubscriptBox[
+           RowBox[{"[", 
+            SubsuperscriptBox["G", "l", "\[Sigma]"], "]"}], 
+           RowBox[{"i", " ", "i"}]]}], "}"}], 
+        RowBox[{
+         SubsuperscriptBox["\[Gamma]", "l", "\[Sigma]"], "(", "i", 
+         ")"}]}]}]]}]}],
+   FontColor->RGBColor[1, 0, 0]], TraditionalForm]}], "DisplayFormulaNumbered",\
+
+ CellChangeTimes->{{3.666485724971608*^9, 3.6664857802455482`*^9}, {
+  3.666485890034573*^9, 3.666485899508801*^9}, {3.666486013928973*^9, 
+  3.6664860967487698`*^9}}],
+
+Cell[TextData[{
+ "where ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{
+     SubsuperscriptBox["\[Gamma]", "l", "\[Sigma]"], "(", "i", ")"}], "=", 
+    RowBox[{
+     SuperscriptBox["\[ExponentialE]", 
+      RowBox[{"2", "\[Lambda]", " ", "\[Sigma]", " ", 
+       RowBox[{
+        SubscriptBox["s", "l"], "(", "i", ")"}]}]], "-", "1"}]}], 
+   TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ ". After a complete lattice sweep, the random walk has to time evolve to the \
+next time step, from the ",
+ Cell[BoxData[
+  FormBox["l", TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ "-th to ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"(", 
+    RowBox[{"l", "+", "1"}], ")"}], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ "-th, then ",
+ Cell[BoxData[
+  FormBox[
+   SubsuperscriptBox["G", 
+    RowBox[{"l", "+", "1"}], "\[Sigma]"], TraditionalForm]],
+  FormatType->"TraditionalForm"],
+ " can be prepared as"
+}], "TextNoIndent",
+ CellChangeTimes->{{3.666486142207896*^9, 3.666486171416645*^9}, {
+  3.66648620345302*^9, 3.6664862787491198`*^9}}],
+
+Cell[BoxData[
+ FormBox[
+  RowBox[{
+   SubsuperscriptBox["G", 
+    RowBox[{"l", "+", "1"}], "\[Sigma]"], "=", 
+   RowBox[{
+    SubsuperscriptBox["B", "l", "\[Sigma]"], 
+    SuperscriptBox[
+     RowBox[{
+      SubsuperscriptBox["G", "l", "\[Sigma]"], "(", 
+      SubsuperscriptBox["B", "l", "\[Sigma]"], ")"}], 
+     RowBox[{"-", "1"}]]}]}], TraditionalForm]], "DisplayFormulaNumbered",
+ CellChangeTimes->{{3.666486284134471*^9, 3.666486304926374*^9}}],
+
+Cell[TextData[{
+ "However, this step cannot guarantee the accuracy after few time evolution \
+steps; in particular for large \[Beta]. To make calculations numerically \
+stable, we need to recalculate ",
+ Cell[BoxData[
+  FormBox[
+   SubsuperscriptBox["G", "l", "\[Sigma]"], TraditionalForm]],
+  CellChangeTimes->{{3.666486284134471*^9, 3.666486304926374*^9}}],
+ " by using ",
+ "Eq. (",
+ 
+ CounterBox["DisplayFormulaNumbered", "eq: 2787601010547098196"],
+ ")",
+ " again."
+}], "TextNoIndent",
+ CellChangeTimes->{{3.666486446512507*^9, 3.66648648069731*^9}}]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{808, 684},
+WindowMargins->{{-26, Automatic}, {21, Automatic}},
+Magnification:>1.25 Inherited,
+FrontEndVersion->"10.2 for Mac OS X x86 (32-bit, 64-bit Kernel) (July 29, \
+2015)",
+StyleDefinitions->"Cambria Article.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "eq: 2787601010547098196"->{
+  Cell[66807, 1924, 780, 21, 47, "DisplayFormulaNumbered",
+   CellTags->"eq: 2787601010547098196"]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"eq: 2787601010547098196", 72525, 2104}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[580, 22, 101, 1, 96, "Title"],
+Cell[CellGroupData[{
+Cell[706, 27, 116, 1, 86, "Section"],
+Cell[825, 30, 268, 8, 26, "TextNoIndent"],
+Cell[1096, 40, 403, 13, 63, "DisplayFormulaNumbered"],
+Cell[CellGroupData[{
+Cell[1524, 57, 3073, 99, 189, "Input"],
+Cell[4600, 158, 8850, 147, 467, "Output"]
+}, Open  ]],
+Cell[13465, 308, 335, 6, 54, "ItemNumbered"],
+Cell[13803, 316, 419, 12, 38, "DisplayFormulaNumbered"],
+Cell[14225, 330, 338, 6, 73, "TextNoIndent"],
+Cell[14566, 338, 862, 26, 152, "DisplayFormulaNumbered"],
+Cell[15431, 366, 1623, 50, 106, "ItemNumbered"],
+Cell[17057, 418, 475, 13, 51, "TextNoIndent"],
+Cell[17535, 433, 2301, 70, 186, "DisplayFormulaNumbered"],
+Cell[19839, 505, 148, 2, 25, "TextNoIndent"],
+Cell[19990, 509, 595, 15, 58, "DisplayFormulaNumbered"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[20622, 529, 214, 3, 86, "Section"],
+Cell[20839, 534, 111, 1, 25, "TextNoIndent"],
+Cell[20953, 537, 1507, 55, 84, "Item"],
+Cell[22463, 594, 662, 16, 72, "DisplayFormulaNumbered"],
+Cell[CellGroupData[{
+Cell[23150, 614, 155, 2, 30, "Item"],
+Cell[23308, 618, 279, 7, 30, "Item"]
+}, Open  ]],
+Cell[23602, 628, 982, 17, 146, "TextNoIndent"],
+Cell[24587, 647, 1891, 52, 88, "DisplayFormulaNumbered"],
+Cell[26481, 701, 174, 2, 25, "TextNoIndent"],
+Cell[26658, 705, 385, 12, 61, "DisplayFormulaNumbered"],
+Cell[27046, 719, 363, 9, 51, "TextNoIndent"],
+Cell[27412, 730, 526, 15, 70, "DisplayFormulaNumbered"],
+Cell[27941, 747, 169, 2, 25, "TextNoIndent"],
+Cell[28113, 751, 269, 8, 31, "Item"],
+Cell[28385, 761, 98, 1, 25, "TextNoIndent"],
+Cell[CellGroupData[{
+Cell[28508, 766, 150, 2, 30, "Item"],
+Cell[28661, 770, 217, 3, 30, "Item"],
+Cell[28881, 775, 784, 26, 51, "Item"],
+Cell[CellGroupData[{
+Cell[29690, 805, 353, 12, 32, "Subitem"],
+Cell[30046, 819, 263, 8, 32, "Subitem"]
+}, Open  ]]
+}, Open  ]],
+Cell[30336, 831, 107, 1, 25, "TextNoIndent"],
+Cell[30446, 834, 107, 1, 49, "Subsection"]
+}, Open  ]],
+Cell[30568, 838, 307, 4, 86, "Section"],
+Cell[30878, 844, 313, 4, 48, "Section"],
+Cell[CellGroupData[{
+Cell[31216, 852, 173, 2, 48, "Section"],
+Cell[31392, 856, 112, 1, 25, "TextNoIndent"],
+Cell[31507, 859, 960, 30, 63, "DisplayFormulaNumbered"],
+Cell[32470, 891, 295, 8, 28, "TextNoIndent"],
+Cell[32768, 901, 607, 18, 74, "DisplayFormulaNumbered"],
+Cell[33378, 921, 336, 6, 73, "TextNoIndent"],
+Cell[33717, 929, 536, 17, 62, "DisplayFormulaNumbered"],
+Cell[34256, 948, 2617, 84, 177, "TextNoIndent"],
+Cell[36876, 1034, 457, 11, 50, "TextNoIndent"],
+Cell[37336, 1047, 1250, 37, 75, "DisplayFormulaNumbered"],
+Cell[38589, 1086, 224, 4, 49, "TextNoIndent"],
+Cell[38816, 1092, 872, 25, 75, "DisplayFormulaNumbered"],
+Cell[39691, 1119, 1121, 32, 75, "DisplayFormulaNumbered"],
+Cell[40815, 1153, 208, 4, 25, "TextNoIndent"],
+Cell[41026, 1159, 815, 23, 47, "DisplayFormulaNumbered"],
+Cell[41844, 1184, 607, 20, 31, "TextNoIndent"],
+Cell[42454, 1206, 965, 30, 57, "DisplayFormulaNumbered"],
+Cell[43422, 1238, 364, 10, 51, "TextNoIndent"],
+Cell[43789, 1250, 1386, 37, 71, "DisplayFormulaNumbered"],
+Cell[45178, 1289, 94, 1, 25, "TextNoIndent"],
+Cell[45275, 1292, 359, 10, 56, "DisplayFormulaNumbered"],
+Cell[45637, 1304, 134, 1, 25, "TextNoIndent"],
+Cell[45774, 1307, 12273, 350, 573, "DisplayFormulaNumbered"],
+Cell[58050, 1659, 97, 1, 25, "TextNoIndent"],
+Cell[58150, 1662, 1043, 27, 58, "DisplayFormulaNumbered"],
+Cell[59196, 1691, 401, 11, 40, "DisplayFormulaNumbered"],
+Cell[59600, 1704, 108, 1, 25, "TextNoIndent"],
+Cell[59711, 1707, 449, 13, 62, "DisplayFormulaNumbered"],
+Cell[60163, 1722, 1169, 38, 78, "TextNoIndent"],
+Cell[61335, 1762, 1172, 32, 71, "DisplayFormulaNumbered"],
+Cell[62510, 1796, 369, 10, 26, "TextNoIndent"],
+Cell[62882, 1808, 1213, 34, 63, "DisplayFormulaNumbered"],
+Cell[64098, 1844, 95, 1, 25, "TextNoIndent"],
+Cell[64196, 1847, 510, 14, 43, "DisplayFormulaNumbered"],
+Cell[64709, 1863, 127, 1, 25, "TextNoIndent"],
+Cell[64839, 1866, 1190, 35, 74, "DisplayFormulaNumbered"],
+Cell[66032, 1903, 772, 19, 75, "TextNoIndent"],
+Cell[66807, 1924, 780, 21, 47, "DisplayFormulaNumbered",
+ CellTags->"eq: 2787601010547098196"],
+Cell[67590, 1947, 157, 2, 25, "TextNoIndent"],
+Cell[67750, 1951, 2318, 70, 130, "DisplayFormulaNumbered"],
+Cell[70071, 2023, 1057, 34, 55, "TextNoIndent"],
+Cell[71131, 2059, 450, 12, 41, "DisplayFormulaNumbered"],
+Cell[71584, 2073, 554, 15, 76, "TextNoIndent"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)

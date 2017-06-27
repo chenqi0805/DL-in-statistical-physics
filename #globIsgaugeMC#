@@ -1,0 +1,17 @@
+      implicit double precision(a-h,o-z)
+      INTEGER Size, MaxSize, MCSteps, MCSteps_eq, Magnetisation
+      PARAMETER (MaxSize=256)
+      INTEGER gauges(MaxSize, MaxSize),spins_x(MaxSize,MaxSize),spins_y(MaxSize,MaxSize)
+
+      REAL(8) s, J, H, Energy, Energy_av,Energy_square_av, MCWeights(3)
+      INTEGER tpoints
+      PARAMETER (tpoints=41)
+      REAL(8) temperature_max, temperature_min, temperature_steps
+      PARAMETER (temperature_max=20.0d0, temperature_min=0.001d0, &
+      temperature_steps=(temperature_max-temperature_min)/dble(tpoints))
+      REAL(8) Temperature(tpoints),En_per_site(tpoints),C_v(tpoints)
+      REAL(8) mag_av, mag_per_site(tpoints), mag_square_av, xi(tpoints)
+
+      COMMON temperature,&
+s, J, H, MCWeights, Energy, Energy_av,Energy_square_av, En_per_site,C_v, Magnetisation, MCSteps, MCSteps_eq,&
+gauges, spins_x, spins_y, Size, mag_av, mag_per_site, mag_square_av, xi
